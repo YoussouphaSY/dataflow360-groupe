@@ -1,0 +1,14 @@
+#Se rendre dans le fichier ou se trouver le docker-compose.yaml 
+
+# se connecter a mysql 
+docker exec -it nom_du_container_mysql mysql -u root -p
+
+# se connectet a postgres 
+docker exec -it nom_du_container_postgres psql -U postgres -d nom_de_la_base_de_données
+
+# se connecter a cassandra 
+
+docker exec -it nom_du_container_cassandra  cqlsh
+
+# se connecter a mongodb 
+docker exec -it nom_du_container_mongo mongosh 
