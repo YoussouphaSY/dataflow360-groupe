@@ -1,0 +1,77 @@
+version: '3.7'
+###########################
+################## Partout ou il y a ben faut changer par vos prenom ############
+###################
+# Les bases de données qu'on va utilisées comme sources initiales des données 
+# mongo , postgres, mysql, cassandra
+services:
+    mongodb:
+      image: mongo:6
+      container_name: mongo_collecte
+      ports:
+        - 27020:27017 # mongo est exposé a 27020, pour eviter les conflits 
+      volumes:
+      - ../Donnees_collectes_ben/Mongodata:/data/db
+      restart: unless-stopped 
+
+    mongo-express:
+      image: mongo-express
+      container_name: mongo-express_360
+      ports:
+        - "8085:8081"
+      environment:
+        - ME_CONFIG_MONGODB_SERVER=mongodb
+        - ME_CONFIG_BASICAUTH_USERNAME=admin
+        - ME_CONFIG_BASICAUTH_PASSWORD=admin
+      restart: unless-stopped
+      depends_on:
+        - mongodb
+
+    
+    postgres: 
+       image:  postgres:13
+       container_name: postgres_collecte
+       environment:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin_pwd
+          POSTGRES_DB: post_db_collect 
+       volumes:
+         - ../Donnees_collectes_ben/Postgres:/var/lib/postgresql/data
+       restart: unless-stopped 
+    mysql: 
+      image: mysql:latest 
+      container_name: mysql_collecte 
+      environment:
+         MYSQL_DATABASE: mysql_db_collecte
+         MYSQL_PASSWORD: admin 
+         MYSQL_ROOT_PASSWORD: admin
+      volumes:
+        - ../Donnees_collectes_ben/mysql:/var/lib/mysql
+      restart: unless-stopped
+    
+    cassandra:
+        image: cassandra:4.1
+        container_name: cassandra
+        ports:
+          - "9050:9042"
+        environment:
+          - CASSANDRA_CLUSTER_NAME=dev-cluster
+          - CASSANDRA_DC=datacenter1
+          - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+        volumes:
+          - ../Donnees_collectes_ben/cassandra:/var/lib/cassandra
+        restart: unless-stopped
+    
+    mongo_lake_ben:
+     image: mongo:6
+     container_name: data_lake_ben
+     ports:
+       - 27022:27017
+     volumes:
+      - ../Donnees_du_data_lake/Mongodata:/data/db
+     restart: unless-stopped 
+
+     
+
+    
+  
