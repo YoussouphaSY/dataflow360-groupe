@@ -12,3 +12,8 @@ docker exec -it nom_du_container_cassandra  cqlsh
 
 # se connecter a mongodb 
 docker exec -it nom_du_container_mongo mongosh 
+
+# se connecter a neo4j / executer ces Deux commandes 
+# apres mets le nom d'utilisateur et mot de passe 
+docker exec -it nom_du_container_neo4j bash 
+cypher-shell
