@@ -1,22 +1,20 @@
 version: '3.7'
-###########################
-################## Partout ou il y a ben faut changer par vos prenom ############
-###################
+
 # Les bases de données qu'on va utilisées comme sources initiales des données 
 # mongo , postgres, mysql, cassandra
 services:
     mongodb:
       image: mongo:6
-      container_name: mongo_collecte
+      container_name: mongo_collecte # changer le nom du container par un de votre choix
       ports:
         - 27020:27017 # mongo est exposé a 27020, pour eviter les conflits 
       volumes:
-      - ../Donnees_collectes_ben/Mongodata:/data/db
+      - ../Donnees_collectes_ben/Mongodata:/data/db  # changer Donnees_collectes_ben par votre nom 
       restart: unless-stopped 
 
     mongo-express:
       image: mongo-express
-      container_name: mongo-express_360
+      container_name: mongo-express_360 # changer le nom du container par un de votre choix
       ports:
         - "8085:8081"
       environment:
@@ -30,28 +28,28 @@ services:
     
     postgres: 
        image:  postgres:13
-       container_name: postgres_collecte
+       container_name: postgres_collecte # changer le nom du container par un de votre choix
        environment:
           POSTGRES_USER: admin
           POSTGRES_PASSWORD: admin_pwd
           POSTGRES_DB: post_db_collect 
        volumes:
-         - ../Donnees_collectes_ben/Postgres:/var/lib/postgresql/data
+         - ../Donnees_collectes_ben/Postgres:/var/lib/postgresql/data # changer Donnees_collectes_ben par votre nom 
        restart: unless-stopped 
     mysql: 
       image: mysql:latest 
-      container_name: mysql_collecte 
+      container_name: mysql_collecte # changer le nom du container par un de votre choix
       environment:
          MYSQL_DATABASE: mysql_db_collecte
          MYSQL_PASSWORD: admin 
          MYSQL_ROOT_PASSWORD: admin
       volumes:
-        - ../Donnees_collectes_ben/mysql:/var/lib/mysql
+        - ../Donnees_collectes_ben/mysql:/var/lib/mysql  # changer Donnees_collectes_ben par votre nom 
       restart: unless-stopped
     
     cassandra:
         image: cassandra:4.1
-        container_name: cassandra
+        container_name: cassandra # changer le nom du container par un de votre choix
         ports:
           - "9050:9042"
         environment:
@@ -59,12 +57,32 @@ services:
           - CASSANDRA_DC=datacenter1
           - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
         volumes:
-          - ../Donnees_collectes_ben/cassandra:/var/lib/cassandra
+          - ../Donnees_collectes_ben/cassandra:/var/lib/cassandra  # changer Donnees_collectes_ben par votre nom 
         restart: unless-stopped
+  
+
+    neo4j_de_ben:      # vous pouvez changer le nom du service 
+        image: neo4j:5.20
+        container_name: neo4j_de_ben # changer ici le nom du container  "neo4j_de_ben par autre chose"  
+        ports:
+          - "7474:7474"  
+          - "7687:7687"   
+        environment:
+          - NEO4J_AUTH=neo4j/benomar10 #vous pouver changer juste le mot de passe 
+        
+        volumes: # Dans les volumes partouts ou il y Donnees_collectes_ben remplacer ben par votre nom
+          - ../Donnees_collectes_ben/neo4j/neo4j-data:/data 
+          -  ../Donnees_collectes_ben/neo4j/neo4j-logs:/logs
+          -  ../Donnees_collectes_ben/neo4j/neo4j-import:/var/lib/neo4j/import
+          -  ../Donnees_collectes_ben/neo4j/neo4j-plugins:/plugins
+        restart: unless-stopped  
+
+
+###################### DataLake #############################
     
     mongo_lake_ben:
      image: mongo:6
-     container_name: data_lake_ben
+     container_name: data_lake_ben # changer le nom du container par un de votre choix
      ports:
        - 27022:27017
      volumes:
