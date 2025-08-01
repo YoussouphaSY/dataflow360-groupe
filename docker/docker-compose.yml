@@ -41,7 +41,7 @@ services:
       container_name: mysql_collecte # changer le nom du container par un de votre choix
       environment:
          MYSQL_DATABASE: mysql_db_collecte
-         MYSQL_PASSWORD: admin 
+         MYSQL_PASSWORD: admin         # MOT DE DPASSE EST "admin" pour "root" et utilisateur "admin"
          MYSQL_ROOT_PASSWORD: admin
       volumes:
         - ../Donnees_collectes_ben/mysql:/var/lib/mysql  # changer Donnees_collectes_ben par votre nom 
@@ -68,7 +68,7 @@ services:
           - "7474:7474"  
           - "7687:7687"   
         environment:
-          - NEO4J_AUTH=neo4j/benomar10 #vous pouver changer juste le mot de passe 
+          - NEO4J_AUTH=neo4j/benomar10  #vous pouver changer juste le mot de passe (ici le mot de passe est "benomar10")
         
         volumes: # Dans les volumes partouts ou il y Donnees_collectes_ben remplacer ben par votre nom
           - ../Donnees_collectes_ben/neo4j/neo4j-data:/data 
