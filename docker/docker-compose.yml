@@ -1,0 +1,133 @@
+version: '3.8'
+
+services:
+  # --------------------- Base de données PostgreSQL ---------------------
+  postgres:
+    image: postgres:15
+    container_name: dataflow_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: agriculture_db
+    ports:
+      - "5433:5432"
+    networks:
+      - elk
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # --------------------- Base de données MongoDB ---------------------
+  mongo:
+    image: mongo:6
+    container_name: dataflow_mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo_admin
+      MONGO_INITDB_ROOT_PASSWORD: mongo_pass123
+    ports:
+      - "27017:27017"
+    networks:
+      - elk
+    volumes:
+      - mongo_data:/data/db
+
+  # --------------------- Zookeeper ---------------------
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: dataflow_zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+    networks:
+      - elk
+
+  # --------------------- Kafka ---------------------
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: dataflow_kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    networks:
+      - elk
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  # --------------------- Prefect Agent ---------------------
+  prefect-agent:
+    image: prefecthq/prefect:2.16-python3.11
+    container_name: dataflow_prefect_agent
+    command: prefect agent start -q default
+    environment:
+      - PREFECT_API_URL=https://api.prefect.cloud/api/accounts/2e5f223f-98dc-4055-9a64-524abe0e5d01/workspaces/1017664b-38c0-421a-8906-0773a5583f1b
+      - PREFECT_API_KEY=pnu_TNFUCvQiXXQLNuEp2NoNZCwegVsJQh2UrkwW
+    volumes:
+      - ../kafka_streaming:/app
+    networks:
+      - elk
+    restart: unless-stopped
+
+  # --------------------- Prefect Flow ---------------------
+  prefect-flow:
+    image: python:3.11
+    container_name: dataflow_prefect_flow
+    working_dir: /app
+    volumes:
+      - ../kafka_streaming:/app
+    networks:
+      - elk
+    command: sleep infinity
+
+  # --------------------- Elasticsearch ---------------------
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    container_name: dataflow_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    networks:
+      - elk
+
+  # --------------------- Logstash ---------------------
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.17.10
+    container_name: dataflow_logstash
+    ports:
+      - "5044:5044"
+      - "5000:5000"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ../elk/logstash/pipeline:/usr/share/logstash/pipeline
+      - ../elk/sample.log:/usr/share/logstash/sample.log
+
+  # --------------------- Kibana ---------------------
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.10
+    container_name: dataflow_kibana
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+# --------------------- Volumes ---------------------
+volumes:
+  postgres_data:
+  mongo_data:
+
+# --------------------- Réseau partagé ---------------------
+networks:
+  elk:
+    driver: bridge

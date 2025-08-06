@@ -1,0 +1,46 @@
+###
+### A complete description of a Prefect Deployment for flow 'Weather Kafka Flow'
+###
+name: agri-kafka-stream
+description: null
+version: 5d5d90951067cb6d6df2ac569740b4d9
+# The work queue that will handle this deployment's runs
+work_queue_name: default
+work_pool_name: default-agent-pool
+tags: []
+parameters: {}
+schedule: null
+schedules: []
+is_schedule_active: null
+infra_overrides: {}
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: Weather Kafka Flow
+manifest_path: null
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  _block_document_id: de0f4296-2854-4ffe-b5a1-ba4a9a31cfce
+  _block_document_name: anonymous-3d2b2e6f-25eb-41a9-a2a0-c27f9b526e15
+  _is_anonymous: true
+  block_type_slug: process
+  _block_type_slug: process
+storage: null
+path: /app
+entrypoint: main_flow.py:weather_stream
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties: {}
+  required: null
+  definitions: null
+timestamp: '2025-08-01T12:08:00.428933+00:00'
+triggers: []
+enforce_parameter_schema: null

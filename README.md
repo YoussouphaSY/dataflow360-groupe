@@ -69,3 +69,27 @@ DataFlow360/
 
 ##  Lancement rapide
 
+## pour deployer
+- prefect deployment build main_flow.py:weather_stream -n agri-kafka-stream --apply
+
+-- Pour intaller
+- pip install kafka-python
+
+-- pour entrer dans log 
+- docker exec -it dataflow_kafka kafka-console-consumer --bootstrap-server kafka:9092 --topic agri-stream --from-beginning
+- mongosh -u mongo_admin -p mongo_pass123 --authenticationDatabase admin
+- docker-compose up -d logstash
+
+## commande pour importer une base en fichier dans un container
+
+- docker exec -it dataflow_mongo mongoexport \
+  --username=mongo_admin \
+  --password=mongo_pass123 \
+  --authenticationDatabase=admin \
+  --db=agriculture_db \
+  --collection=farms \
+  --out=/data/mon_export_farm.json
+
+## commande pour recuperer le fichier dans le container et l'envoyer en local
+# Copier depuis MongoDB vers machine locale
+- docker cp dataflow_mongo:/data/mon_export.json ./mon_export.json
